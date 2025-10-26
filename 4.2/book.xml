@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<catalog>
+    <book id="b001">
+        <title>Introduction to Algorithms</title>
+        <author>Thomas H. Cormen</author>
+        <price>59.99</price>
+        <genre>Computer Science</genre>
+    </book>
+
+    <book id="b002">
+        <title>Design Patterns</title>
+        <author>Erich Gamma</author>
+        <price>49.50</price>
+        <genre>Software Engineering</genre>
+    </book>
+
+    <book id="b003">
+        <title>Effective Java</title>
+        <author>Joshua Bloch</author>
+        <price>39.99</price>
+        <genre>Programming</genre>
+    </book>
+</catalog>

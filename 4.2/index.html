@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Catalogue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            padding: 30px;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+        #book-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .book {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .book:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .book h2 {
+            font-size: 20px;
+            color: #34495e;
+            margin: 0 0 10px;
+        }
+        .book p {
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+        #error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Book Catalogue</h1>
+    <div id="error-message"></div>
+    <div id="book-list"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookList = document.getElementById('book-list');
+            const errorMessage = document.getElementById('error-message');
+
+            async function loadBooks() {
+                try {
+                    const response = await fetch('book.xml');
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+                    const xmlText = await response.text();
+                    const xmlDoc = new DOMParser().parseFromString(xmlText, 'application/xml');
+                    const books = xmlDoc.querySelectorAll('book');
+
+                    if (!books.length) throw new Error('No books found in XML.');
+
+                    bookList.innerHTML = ''; // 清空旧内容
+
+                    books.forEach(book => {
+                        const title = book.querySelector('title')?.textContent ?? 'Unknown Title';
+                        const author = book.querySelector('author')?.textContent ?? 'Unknown Author';
+                        const price = book.querySelector('price')?.textContent ?? 'N/A';
+                        const genre = book.querySelector('genre')?.textContent ?? 'N/A';
+
+                        const bookCard = document.createElement('div');
+                        bookCard.className = 'book';
+                        bookCard.innerHTML = `
+                            <h2>${title}</h2>
+                            <p><strong>Author:</strong> ${author}</p >
+                            <p><strong>Price:</strong> $${price}</p >
+                            <p><strong>Genre:</strong> ${genre}</p >
+                        `;
+                        bookList.appendChild(bookCard);
+                    });
+
+                } catch (error) {
+                    console.error('Error loading XML:', error);
+                    errorMessage.textContent = `⚠️ Failed to load books: ${error.message}`;
+                }
+            }
+
+            loadBooks();
+        });
+    </script>
+</body>
+</html>

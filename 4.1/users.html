@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profiles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f7;
+            padding: 30px;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+        #user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .user {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .user:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .user h2 {
+            font-size: 18px;
+            color: #34495e;
+            margin: 0 0 10px;
+        }
+        .user p {
+            margin: 5px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        #error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>👥 User Profiles</h1>
+    <div id="error-message"></div>
+    <div id="user-list"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userList = document.getElementById('user-list');
+            const errorMessage = document.getElementById('error-message');
+
+            async function loadUsers() {
+                try {
+                    const response = await fetch('userProfiles.json');
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+                    const users = await response.json();
+                    if (!users.length) throw new Error('No user data found.');
+
+                    // 清空旧数据
+                    userList.innerHTML = '';
+
+                    // 创建用户卡片
+                    users.forEach(user => {
+                        const {
+                            firstName = 'Unknown',
+                            lastName = '',
+                            email = 'N/A',
+                            dateOfBirth = 'N/A',
+                            address = {},
+                            preferences = {}
+                        } = user;
+
+                        const {
+                            street = '', city = '', state = '', zipCode = ''
+                        } = address;
+
+                        const {
+                            theme = 'default',
+                            language = 'en',
+                            notifications = false,
+                            subscription = false
+                        } = preferences;
+
+                        const userCard = document.createElement('div');
+                        userCard.className = 'user';
+                        userCard.innerHTML = `
+                            <h2>${firstName} ${lastName}</h2>
+                            <p><strong>Email:</strong> ${email}</p >
+                            <p><strong>DOB:</strong> ${dateOfBirth}</p >
+                            <p><strong>Address:</strong> ${street}, ${city}, ${state} ${zipCode}</p >
+                            <p><strong>Preferences:</strong></p >
+                            <ul style="margin: 5px 0 0 15px; font-size: 13px;">
+                                <li>Theme: ${theme}</li>
+                                <li>Language: ${language}</li>
+                                <li>Notifications: ${notifications ? 'Enabled' : 'Disabled'}</li>
+                                <li>Subscription: ${subscription ? 'Active' : 'Inactive'}</li>
+                            </ul>
+                        `;
+                        userList.appendChild(userCard);
+                    });
+
+                } catch (error) {
+                    console.error('Error loading JSON:', error);
+                    errorMessage.textContent = `⚠️ Failed to load users: ${error.message}`;
+                }
+            }
+
+            loadUsers();
+        });
+    </script>
+</body>
+</html>
